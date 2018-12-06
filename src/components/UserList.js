@@ -1,31 +1,10 @@
 import React, { Component } from 'react'
-import { gql } from 'apollo-boost'
 import { graphql, compose } from 'react-apollo'
 import { ListGroup, ListGroupItem } from 'react-bootstrap'
 import Button from './common/Button'
 import CreateUser from './UserCreate'
-
-const getUsersQuery = gql`
-  {
-    users {
-      name
-      username
-      id
-    }
-  }
-`
-
-const addUserMutation = gql`
-  mutation ( $name: String!, $username: String!, $dateBirth: String!, $password: String! ) {
-    createUser ( name: $name, username: $username, dateBirth: $dateBirth, password: $password  ) {
-      id
-      name,
-      username
-      dateBirth
-      password
-    }
-  }
-`
+import { getUsersQuery } from '../queries/UserQueries'
+import { addUserMutation } from '../mutations/UserMutations'
 
 class UserList extends Component {
 
@@ -36,13 +15,16 @@ class UserList extends Component {
     if (getUserQuery.loading || getUserQuery.networkStatus === 8) {
       return <div>Carregando Usuários ...</div>
     }
-    else return getUserQuery.users.map(user => <ListGroupItem>{ user.name }</ListGroupItem>)
+    else return getUserQuery.users.map(user => <ListGroupItem key={user.id}>{ user.name }</ListGroupItem>)
   }
 
   async onPressButtonModal (action, values) {
     if (action === 'close') this.setState({ visibleCreateUser: false })
     else {
-      const userCreate = await this.props.addUserMutation({ variables: values })
+      const userCreate = await this.props.addUserMutation({
+        variables: values,
+        refetchQueries: [{ query: getUsersQuery }]
+      })
       console.log('userCreate: ', userCreate)
     }
   }
