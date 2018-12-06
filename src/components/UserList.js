@@ -16,8 +16,8 @@ const getUsersQuery = gql`
 `
 
 const addUserMutation = gql`
-  mutation {
-    createUser ( name: "", username: "", dateBirth: "", password: ""  ) {
+  mutation ( $name: String!, $username: String!, $dateBirth: String!, $password: String! ) {
+    createUser ( name: $name, username: $username, dateBirth: $dateBirth, password: $password  ) {
       id
       name,
       username
@@ -33,14 +33,17 @@ class UserList extends Component {
 
   listUsers () {
     const { getUserQuery } = this.props
-    if (getUserQuery.loading) return <div>Carregando Usuários ...</div>
+    if (getUserQuery.loading || getUserQuery.networkStatus === 8) {
+      return <div>Carregando Usuários ...</div>
+    }
     else return getUserQuery.users.map(user => <ListGroupItem>{ user.name }</ListGroupItem>)
   }
 
-  onPressButtonModal (action, values) {
+  async onPressButtonModal (action, values) {
     if (action === 'close') this.setState({ visibleCreateUser: false })
     else {
-     console.log('Values to Save: ', values)
+      const userCreate = await this.props.addUserMutation({ variables: values })
+      console.log('userCreate: ', userCreate)
     }
   }
 

@@ -10,6 +10,11 @@ class UserCreate extends Component {
     this.setState({ [`${state}`]: value })
   }
 
+  onPress () {
+    this.props.onPressButton('save', this.state)
+    this.setState({ name: '', username: '', dateBirth: '', password: '' })
+  }
+
   renderModal () {
     return (
       <Modal.Dialog>
@@ -64,7 +69,7 @@ class UserCreate extends Component {
             color='primary'
             title='Salvar'
             titleColor='white'
-            onPress={() => this.props.onPressButton('save', this.state)}/>
+            onPress={() => this.onPress()}/>
         </Modal.Footer>
       </Modal.Dialog>
     )
