@@ -1,20 +1,22 @@
 import React, { Component } from 'react'
 import UserList from './components/UserList'
+import Login from './components/Login'
 import ApolloClient from 'apollo-boost'
 import { ApolloProvider } from 'react-apollo'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 
 // apollo client setup
 const clientUser = new ApolloClient({
-  uri: 'http://localhost:3001/graphql/user'
+  uri: 'https://soccer-players.herokuapp.com/graphql/user'
 })
 
 class App extends Component {
   render() {
     return (
       <ApolloProvider client={clientUser}>
-        <div style={{ backgroundColor: '#006400', height: window.innerHeight }}>
-          <UserList/>
-        </div>
+        <Router>
+          <Route path='/' component={Login} exact />
+        </Router>
       </ApolloProvider>
     )
   }
