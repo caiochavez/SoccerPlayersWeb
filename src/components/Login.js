@@ -4,6 +4,9 @@ import {
 } from '@material-ui/core'
 import { graphql } from 'react-apollo'
 import { signInMutation } from '../mutations/UserMutations'
+import { connect } from 'react-redux'
+import { compose } from 'redux'
+import { signin } from '../actions/index'
 
 class Login extends Component {
   state = { username: '', password: '', errorUsername: false, errorPassword: false }
@@ -27,10 +30,12 @@ class Login extends Component {
   async submit () {
     try {
       const { username, password } = this.state
-      const userLogged = await this.props.signIn({
+      const { signInApollo, signInRedux } = this.props
+      const userLogged = await signInApollo({
         variables: { username, password }
        })
-      console.log('userLogged: ', userLogged)
+      const { user, token } = userLogged.data.signIn
+      signInRedux({ user, token })
     } catch (err) {
       console.log('Error:', err)
     }
@@ -103,4 +108,11 @@ const styles = {
   }
 }
 
-export default graphql(signInMutation, { name: 'signIn' })(Login)
+const mapDispatchToProps = {
+  signInRedux: signin
+}
+
+export default compose(
+  connect(null, mapDispatchToProps),
+  graphql(signInMutation, { name: 'signInApollo' })
+)(Login)
