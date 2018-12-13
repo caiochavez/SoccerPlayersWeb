@@ -7,9 +7,10 @@ import { signInMutation } from '../mutations/UserMutations'
 import { connect } from 'react-redux'
 import { compose } from 'redux'
 import { signin } from '../actions/index'
+import { Redirect } from 'react-router-dom'
 
 class Login extends Component {
-  state = { username: '', password: '', errorUsername: false, errorPassword: false }
+  state = { username: '', password: '', errorUsername: false, errorPassword: false, redirect: false }
 
   changeValue (field, value) {
     this.setState({ [`${field}`]: value })
@@ -36,9 +37,15 @@ class Login extends Component {
        })
       const { user, token } = userLogged.data.signIn
       signInRedux({ user, token })
+      localStorage.setItem('token', token)
+      this.setState({ redirect: true })
     } catch (err) {
       console.log('Error:', err)
     }
+  }
+
+  redirect () {
+    if (this.state.redirect) return <Redirect to='/teams' />
   }
 
   render () {
@@ -86,6 +93,7 @@ class Login extends Component {
             </Button>
           </CardActions>
         </Card>
+        { this.redirect() }
       </form>
     )
   }
