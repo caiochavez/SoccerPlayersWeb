@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
-import Login from './components/Login'
-import TeamList from './components/Team/TeamList'
 import ApolloClient from 'apollo-boost'
 import { ApolloProvider } from 'react-apollo'
-import { BrowserRouter as Router, Route, Redirect } from 'react-router-dom'
 import { Provider as ReduxProvider } from 'react-redux'
 import { createStore } from 'redux'
 import reducers from './reducers/index'
+import Routes from './routes'
 
 // apollo client setup
 const clientUser = new ApolloClient({
-  uri: 'https://soccer-players.herokuapp.com/graphql/user'
+  uri: 'https://soccer-players.herokuapp.com/graphql',
+  headers: {
+    authorization: localStorage.getItem('token')
+  }
 })
 
 class App extends Component {
@@ -23,12 +24,7 @@ class App extends Component {
     return (
       <ApolloProvider client={clientUser}>
         <ReduxProvider store={store}>
-          <Router>
-            <div>
-              <Route path='/' component={Login} exact />
-              <Route path='/teams' component={TeamList} />
-            </div>
-          </Router>
+          <Routes />
         </ReduxProvider>
       </ApolloProvider>
     )
